@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MobileLab — year-1 info site</title>
+  <meta name="description" content="Year-1 info site: awareness, fundraising, creator prep. Philosophy tab. Static corridor map. Dashboard closed until funded and built." />
+  <script>
+    if (/[?&](era=ops|open=1|code=1)(?:&|$)/.test(location.search)) {
+      document.documentElement.setAttribute("data-era", "ops");
+    }
+  </script>
+  <style>
+    :root {
+      --bg0: #07090d;
+      --bg1: #0a0c10;
+      --panel: #161b24;
+      --panel-2: #1c2330;
+      --edge: #2a3344;
+      --edge-bright: #3d4b63;
+      --text: #e8eef7;
+      --muted: #9aa8bc;
+      --dim: #6b7a90;
+      --cyan: #3de0ff;
+      --cyan-dim: #1a8fa8;
+      --cyan-glow: rgba(61, 224, 255, 0.4);
+      --amber: #ff9a3c;
+      --amber-dim: #c46a18;
+      --amber-glow: rgba(255, 154, 60, 0.28);
+      --ok: #4ade80;
+      --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+      --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      --radius: 10px;
+      --max: 1120px;
+      --door-ms: 1200ms;
+      --outer-ms: 900ms;
+      --door-ease: cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg0);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    body.gate-locked { overflow: hidden; height: 100vh; }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Mock ribbon ── */
+    .mock-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: linear-gradient(90deg, #1a1208, #241808 40%, #1a1208);
+      border-bottom: 1px solid var(--amber-dim);
+      color: var(--amber);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0.4rem 1rem;
+    }
+    .mock-banner span {
+      color: var(--muted);
+      margin-left: 0.7rem;
+      letter-spacing: 0.03em;
+      text-transform: none;
+    }
+    .mock-banner a { color: var(--amber); }
+
+    /* ── Info era (year-1 public site) — bright, normal, alt-school ── */
+    body.info-era {
+      overflow: auto;
+      height: auto;
+      background: #f6f1e8;
+      color: #1c1914;
+      font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    }
+    body.info-era a { color: #2c5a3f; }
+    body.info-era .gate,
+    body.info-era .app { display: none !important; }
+    body.ops-era #info-site,
+    html[data-era="ops"] #info-site { display: none !important; }
+    html[data-era="ops"] .gate { display: block !important; }
+    html[data-era="ops"] .app { display: block !important; }
+
+    body.info-era .mock-banner {
+      background: #efe6d6;
+      border-bottom: 1px solid #ddd4c4;
+      color: #5a5348;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+    body.info-era .mock-banner span { color: #7a7368; }
+    body.info-era .mock-banner a { color: #2c5a3f; }
+
+    #info-site {
+      --paper: #f6f1e8;
+      --card: #fffdf8;
+      --ink: #1c1914;
+      --soft: #5a5348;
+      --line: #ddd4c4;
+      --green: #2c5a3f;
+      --green-deep: #1e3f2c;
+      padding-top: 28px;
+      min-height: 100vh;
+      background: #f6f1e8;
+      color: #1c1914;
+    }
+    #info-site h1, #info-site h2, #info-site h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 600;
+      color: #1c1914;
+    }
+    #info-site .info-top {
+      border-bottom: 1px solid #ddd4c4;
+      background: #fffdf8;
+      position: sticky;
+      top: 28px;
+      z-index: 20;
+    }
+    #info-site .info-top .topbar-inner { padding: 0.85rem 0; }
+    #info-site .brand { color: #1c1914; }
+    #info-site .brand-mark {
+      width: 36px; height: 36px;
+      border-radius: 4px;
+      border: 1px solid #cbbfa8;
+      background: #f6f1e8;
+      box-shadow: none;
+      color: #2c5a3f;
+      font-family: Georgia, serif;
+      font-size: 0.85rem;
+    }
+    #info-site .brand-text strong {
+      letter-spacing: 0;
+      font-family: Georgia, serif;
+      font-size: 1.2rem;
+    }
+    #info-site .brand-text small {
+      color: #7a7368;
+      font-family: inherit;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+    .info-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.15rem 0.15rem;
+      align-items: center;
+    }
+    .info-nav button {
+      background: none;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      color: #5a5348;
+      font: inherit;
+      font-size: 0.95rem;
+      padding: 0.4rem 0.65rem;
+      cursor: pointer;
+      border-radius: 0;
+    }
+    .info-nav button:hover { color: #1c1914; }
+    .info-nav button.is-on {
+      color: #1c1914;
+      background: none;
+      border-bottom-color: #2c5a3f;
+    }
+    .info-panel { display: none; padding: 2rem 0 4rem; }
+    .info-panel.is-on { display: block; }
+    .info-hero h1 {
+      font-size: clamp(1.85rem, 3.4vw, 2.6rem);
+      margin: 0.25rem 0 0.85rem;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    #info-site .status,
+    .info-hero .status {
+      font-family: inherit;
+      font-size: 0.95rem;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #9a4a2a;
+      margin: 0 0 0.65rem;
+      padding: 0;
+      border: 0;
+      background: none;
+      white-space: normal;
+    }
+    #info-site .lede { color: #5a5348; max-width: 62ch; font-size: 1.05rem; }
+    #info-site .lede strong { color: #1c1914; }
+    .doors-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.6rem 0;
+    }
+    @media (max-width: 720px) { .doors-row { grid-template-columns: 1fr; } }
+    .door-card {
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      border-radius: 2px;
+      padding: 1.15rem 1.2rem;
+      box-shadow: 0 1px 0 rgba(28, 25, 20, 0.04);
+    }
+    .door-card h3 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+    .door-card p { margin: 0; color: #5a5348; font-size: 0.95rem; }
+    .stills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.2rem 0 0.4rem;
+    }
+    @media (max-width: 720px) { .stills { grid-template-columns: 1fr; } }
+    .still {
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .still .frame {
+      background: #ece6da;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .still img {
+      display: block;
+      max-width: 100%;
+      max-height: 240px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    .still figcaption {
+      padding: 0.7rem 0.85rem 0.85rem;
+      font-size: 0.88rem;
+      color: #5a5348;
+    }
+    .still figcaption strong { color: #1c1914; display: block; margin-bottom: 0.15rem; font-family: Georgia, serif; }
+    .placeholder-note {
+      font-size: 0.85rem;
+      color: #7a7368;
+      margin: 0 0 1.5rem;
+    }
+    .thermo {
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      border-radius: 2px;
+      padding: 1.1rem 1.2rem;
+      margin: 1.3rem 0;
+    }
+    .thermo .bar {
+      height: 12px;
+      background: #ece6da;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 0.55rem 0 0.4rem;
+    }
+    .thermo .bar > i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: #2c5a3f;
+    }
+    .map-svg {
+      width: 100%;
+      max-width: 720px;
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      border-radius: 2px;
+    }
+    #info-site .prose h2 { margin: 1.7rem 0 0.5rem; font-size: 1.35rem; }
+    #info-site .prose p, #info-site .prose li { color: #5a5348; }
+    #info-site .prose ul, #info-site .prose ol { padding-left: 1.2rem; }
+    #info-site .prose li { margin: 0.35rem 0; }
+    .field { margin: 0.7rem 0; }
+    .field label { display: block; font-size: 0.85rem; color: #7a7368; margin-bottom: 0.25rem; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      max-width: 28rem;
+      background: #fffdf8;
+      border: 1px solid #cbbfa8;
+      color: #1c1914;
+      padding: 0.55rem 0.7rem;
+      border-radius: 2px;
+      font: inherit;
+    }
+    #info-site .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border-radius: 2px;
+      padding: 0.6rem 1.15rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      width: auto;
+    }
+    #info-site .btn-primary { background: #2c5a3f; color: #fffdf8; width: auto; }
+    #info-site .btn-primary:hover { background: #1e3f2c; }
+    #info-site .btn-secondary {
+      background: transparent;
+      color: #1c1914;
+      border-color: #cbbfa8;
+    }
+    #info-site .btn-ghost { background: transparent; color: #5a5348; }
+    .letter {
+      display: grid;
+      grid-template-columns: 176px 1fr;
+      gap: 1rem;
+      align-items: center;
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      border-radius: 2px;
+      padding: 1.15rem;
+      margin: 1.15rem 0 1.3rem;
+    }
+    .letter .portrait {
+      width: 176px; height: 176px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 28%;
+      background: #ece6da;
+      border: 1px solid #ddd4c4;
+      display: block;
+    }
+    .letter p { margin: 0.3rem 0; color: #1c1914; font-weight: 700; }
+    .letter button {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      color: #2c5a3f;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+    .letter button:hover { color: #1e3f2c; }
+    #info-site .letter .status { color: #2c5a3f; }
+
+    /* ── Photo-heavy info layout (public, daylight) ── */
+    #panel-home.info-panel { padding: 0 0 4rem; }
+    #info-site .photo-hero {
+      position: relative;
+      min-height: min(78vh, 720px);
+      color: #fffdf8;
+      overflow: hidden;
+    }
+    #info-site .photo-hero > img.hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 55% 42%;
+      display: block;
+    }
+    #info-site .photo-hero-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(28,25,20,0.78) 0%, rgba(28,25,20,0.42) 48%, rgba(28,25,20,0.12) 100%),
+        linear-gradient(180deg, rgba(28,25,20,0.28) 0%, transparent 28%, rgba(28,25,20,0.5) 100%);
+    }
+    #info-site .photo-hero-copy {
+      position: relative;
+      z-index: 2;
+      padding: 4.2rem 0 9rem;
+    }
+    #info-site .photo-hero h1 {
+      color: #fffdf8;
+      font-size: clamp(2.15rem, 5vw, 3.55rem);
+      max-width: 14ch;
+      line-height: 1.08;
+      margin: 0.2rem 0 0.85rem;
+    }
+    #info-site .photo-hero .lede {
+      color: #efe6d6;
+      max-width: 46ch;
+    }
+    #info-site .photo-hero .lede strong { color: #fffdf8; }
+    #info-site .photo-hero .status {
+      color: #e8c9a8;
+      margin-bottom: 0.85rem;
+    }
+    #info-site .photo-hero .hero-actions {
+      margin: 1.15rem 0 0;
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    #info-site .photo-hero .btn { flex: 0 0 auto; width: auto; }
+    #info-site .photo-hero .btn-secondary {
+      color: #fffdf8;
+      border-color: rgba(255,253,248,0.55);
+      background: transparent;
+    }
+    #info-site .photo-hero .btn-secondary:hover {
+      background: rgba(255,253,248,0.1);
+    }
+    #info-site .hero-float {
+      position: relative;
+      z-index: 3;
+      margin-top: -6.8rem;
+      margin-bottom: 0.4rem;
+    }
+    #info-site .hero-card {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      max-width: 560px;
+      margin-left: auto;
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      box-shadow: 0 18px 44px rgba(28,25,20,0.2);
+      color: #1c1914;
+      overflow: hidden;
+    }
+    #info-site .hero-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+    #info-site .hero-card .hero-card-body {
+      padding: 1rem 1.15rem 1.1rem;
+    }
+    #info-site .hero-card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+    }
+    #info-site .hero-card p {
+      margin: 0 0 0.55rem;
+      color: #5a5348;
+      font-size: 0.9rem;
+    }
+    #info-site .hero-card .thermo {
+      margin: 0.4rem 0 0;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    #info-site .feature-band {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 0;
+      margin: 2.2rem 0 0.4rem;
+      align-items: stretch;
+    }
+    #info-site .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-right: 1rem;
+    }
+    #info-site .shot-card {
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #info-site .shot-card img {
+      width: 100%;
+      height: 188px;
+      object-fit: cover;
+      display: block;
+    }
+    #info-site .shot-card .shot-body {
+      padding: 0.85rem 0.95rem 1rem;
+      flex: 1;
+    }
+    #info-site .shot-card h3 {
+      margin: 0 0 0.3rem;
+      font-size: 1.08rem;
+    }
+    #info-site .shot-card p {
+      margin: 0;
+      color: #5a5348;
+      font-size: 0.9rem;
+    }
+    #info-site .shot-kicker {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: #2c5a3f;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    #info-site .feature-rail {
+      background: #2c5a3f;
+      color: #fffdf8;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    #info-site .feature-rail button {
+      flex: 1;
+      background: none;
+      border: 0;
+      border-bottom: 1px solid rgba(255,253,248,0.16);
+      color: #fffdf8;
+      padding: 1.25rem 1.15rem;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+    #info-site .feature-rail button:last-child { border-bottom: 0; }
+    #info-site .feature-rail button:hover { background: #1e3f2c; }
+    #info-site .feature-rail strong {
+      display: block;
+      font-family: Georgia, serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    #info-site .feature-rail span {
+      display: block;
+      font-size: 0.85rem;
+      color: #d5e6db;
+      line-height: 1.35;
+    }
+    #info-site .look-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 2.4rem 0 0.85rem;
+    }
+    #info-site .look-head h2 { margin: 0; }
+    #info-site .look-nav { display: flex; gap: 0.4rem; }
+    #info-site .look-nav button {
+      width: 36px; height: 36px;
+      border: 1px solid #cbbfa8;
+      background: #fffdf8;
+      color: #1c1914;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+    #info-site .look-nav button:hover { border-color: #2c5a3f; color: #2c5a3f; }
+    #info-site .look-row {
+      display: flex;
+      gap: 0.85rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 0.6rem;
+      scrollbar-width: thin;
+    }
+    #info-site .look-card {
+      flex: 0 0 calc((100% - 1.7rem) / 3);
+      scroll-snap-align: start;
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      overflow: hidden;
+    }
+    #info-site .look-card img {
+      width: 100%;
+      height: 188px;
+      object-fit: cover;
+      display: block;
+    }
+    #info-site .look-card figcaption {
+      padding: 0.7rem 0.8rem 0.85rem;
+      font-size: 0.88rem;
+      color: #5a5348;
+    }
+    #info-site .look-card figcaption strong {
+      display: block;
+      color: #1c1914;
+      font-family: Georgia, serif;
+      margin-bottom: 0.12rem;
+    }
+    #info-site .banner-still {
+      margin: 0 0 1.4rem;
+      overflow: hidden;
+      border: 1px solid #ddd4c4;
+      background: #1c1914;
+    }
+    #info-site .banner-still img {
+      display: block;
+      width: 100%;
+      height: min(38vh, 280px);
+      object-fit: cover;
+    }
+    #info-site .visit-shots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.2rem 0 1.4rem;
+    }
+    #info-site .visit-shots figure {
+      margin: 0;
+      background: #fffdf8;
+      border: 1px solid #ddd4c4;
+      overflow: hidden;
+    }
+    #info-site .visit-shots img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    #info-site .visit-shots figcaption {
+      padding: 0.65rem 0.8rem 0.8rem;
+      font-size: 0.88rem;
+      color: #5a5348;
+    }
+    #info-site .info-foot {
+      border-top: 1px solid #ddd4c4;
+      margin-top: 2.5rem;
+      padding: 1.2rem 0 0.4rem;
+      color: #7a7368;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 900px) {
+      #info-site .feature-band { grid-template-columns: 1fr; }
+      #info-site .feature-grid {
+        grid-template-columns: 1fr;
+        padding-right: 0;
+        margin-bottom: 1rem;
+      }
+      #info-site .feature-rail { flex-direction: row; }
+      #info-site .feature-rail button {
+        border-bottom: 0;
+        border-right: 1px solid rgba(255,253,248,0.16);
+      }
+      #info-site .feature-rail button:last-child { border-right: 0; }
+      #info-site .hero-card { grid-template-columns: 1fr; max-width: none; }
+      #info-site .hero-card img { height: 180px; min-height: 0; }
+      #info-site .visit-shots { grid-template-columns: 1fr; }
+      #info-site .photo-hero-copy { padding: 3rem 0 7rem; }
+    }
+    @media (max-width: 640px) {
+      #info-site .info-top .topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+      }
+      #info-site .info-nav {
+        width: 100%;
+      }
+      .letter {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: left;
+      }
+      .letter > div { width: 100%; }
+      #info-site .feature-rail { flex-direction: column; }
+      #info-site .feature-rail button {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,253,248,0.16);
+      }
+      #info-site .look-card { flex-basis: 82vw; }
+      #info-site .photo-hero { min-height: 0; }
+      #info-site .photo-hero-copy { padding: 2.2rem 0 5rem; }
+      #info-site .photo-hero .hero-actions { flex-direction: column; }
+      #info-site .photo-hero .btn-primary,
+      #info-site .photo-hero .btn-secondary { width: 100%; }
+    }
+
+    /* ══════════════════════════════════════
+       GATE — layered secret-lab entry (web)
+       1) ordinary outer reefer doors
+       2) pause + access code at closed lab front
+       3) inner 2-leaf sliding lab front opens
+       ══════════════════════════════════════ */
+    .gate {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      perspective: 1400px;
+    }
+    .gate.is-closed { pointer-events: auto; }
+    .gate.is-open { pointer-events: none; }
+
+    .gate-veil {
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 6, 10, 0.35);
+      opacity: 1;
+      transition: opacity 0.6s ease;
+      z-index: 1;
+    }
+    .gate.stage-code .gate-veil {
+      opacity: 0.18;
+      background: rgba(4, 10, 18, 0.45);
+    }
+    .gate.stage-inner .gate-veil,
+    .gate.is-open .gate-veil { opacity: 0; }
+
+    /* Stage caption (bottom) */
+    .stage-caption {
+      position: absolute;
+      left: 50%;
+      bottom: 1.1rem;
+      transform: translateX(-50%);
+      z-index: 50;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #3a3a3a;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid #c8c8c8;
+      padding: 0.35rem 0.7rem;
+      border-radius: 4px;
+      opacity: 1;
+      transition: opacity 0.35s ease, color 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .gate.stage-outers .stage-caption {
+      color: var(--amber);
+      background: rgba(12, 16, 23, 0.88);
+      border-color: var(--amber-dim);
+    }
+    .gate.stage-code .stage-caption,
+    .gate.stage-inner .stage-caption {
+      color: var(--cyan);
+      background: rgba(12, 16, 23, 0.88);
+      border-color: var(--cyan-dim);
+    }
+    .gate.is-open .stage-caption { opacity: 0; }
+
+    /* ── Layer 3 (back): inner sci-fi sliding doors ── */
+    .inner-doors {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+    .door {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      overflow: hidden;
+      transition: transform var(--door-ms) var(--door-ease);
+      will-change: transform;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.65);
+    }
+    .door-left  { left: 0; border-right: 1px solid rgba(61, 224, 255, 0.15); }
+    .door-right { right: 0; border-left: 1px solid rgba(61, 224, 255, 0.15); }
+    .door-face {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 200%;
+      /* Full-frame 2-leaf lab front (website-lab-doors.jpg). cover = no stretch;
+         200% width + left/right alignment splits the same still 50/50. */
+      background:
+        linear-gradient(180deg, rgba(4,6,10,0.16), transparent 22%, transparent 72%, rgba(4,6,10,0.28)),
+        url("visuals/website-lab-doors.jpg") center / cover no-repeat;
+      background-color: #07090d;
+    }
+    .door-left  .door-face { left: 0; }
+    .door-right .door-face { right: 0; }
+    .door-left::after,
+    .door-right::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 3px;
+      z-index: 3;
+      background: linear-gradient(180deg, transparent 5%, var(--cyan) 20%, #9cf3ff 50%, var(--cyan) 80%, transparent 95%);
+      box-shadow: 0 0 18px var(--cyan-glow), 0 0 40px rgba(61, 224, 255, 0.25);
+      opacity: 0.85;
+    }
+    .door-left::after  { right: 0; }
+    .door-right::before { left: 0; }
+    .latch {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      width: 18px;
+      height: 64px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #2a3344, #4a5a72, #2a3344);
+      border: 1px solid var(--cyan-dim);
+      box-shadow: 0 0 16px var(--cyan-glow);
+      opacity: 1;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .gate.stage-inner .door-left,
+    .gate.is-open .door-left { transform: translateX(-102%); }
+    .gate.stage-inner .door-right,
+    .gate.is-open .door-right { transform: translateX(102%); }
+    .gate.stage-inner .latch,
+    .gate.is-open .latch {
+      opacity: 0;
+      transform: translate(-50%, -50%) scaleY(0.4);
+    }
+
+    /* ── Layer 1 (front): ordinary outer reefer doors ──
+       Photo rear (header + door skins + bumper) so the street face
+       reads as a real unmarked 53-ft reefer, not CSS siding.
+       The photo is contained at native aspect (1430×2014) with black
+       pillarboxing — never stretched to the viewport. */
+    .outer-doors {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background: #000;
+      container-type: size;
+      transform-style: preserve-3d;
+    }
+    .outer-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transform-style: preserve-3d;
+      aspect-ratio: 1430 / 2014;
+      /* vh/vw fallback, then container units once .outer-doors is sized */
+      width: min(100%, calc(100vh * 1430 / 2014));
+      height: min(100%, calc(100vw * 2014 / 1430));
+      width: min(100cqw, calc(100cqh * 1430 / 2014));
+      height: min(100cqh, calc(100cqw * 2014 / 1430));
+      background: #000;
+    }
+    /* Intact rear photo while sealed — hides the 50/50 split seam */
+    .outer-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: url("visuals/website-reefer-rear.jpg") center / 100% 100% no-repeat;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 120ms linear;
+    }
+    .gate.stage-outers .outer-stage::before,
+    .gate.stage-code .outer-stage::before,
+    .gate.stage-inner .outer-stage::before,
+    .gate.is-open .outer-stage::before {
+      opacity: 0;
+    }
+    .outer-header,
+    .outer-bumper {
+      position: relative;
+      z-index: 4;
+      min-height: 0;
+      pointer-events: none;
+      background-color: #111;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 100% 100%;
+    }
+    .outer-header {
+      flex: 126 1 0;
+      background-image: url("visuals/website-reefer-header.jpg");
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+    }
+    .outer-bumper {
+      flex: 492 1 0;
+      background-image: url("visuals/website-reefer-bumper.jpg");
+      box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.28);
+    }
+    .outer-leaves {
+      position: relative;
+      flex: 1396 1 0;
+      min-height: 0;
+      display: flex;
+      transform-style: preserve-3d;
+    }
+    .outer {
+      flex: 1 0 50%;
+      width: 50%;
+      position: relative;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform var(--outer-ms) var(--door-ease);
+      will-change: transform;
+      overflow: hidden;
+    }
+    .outer-left { margin-right: -2px; }
+    .outer-right { transform-origin: right center; margin-left: -2px; }
+    .outer-skin {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 200%;
+      background:
+        url("visuals/website-reefer-doors.jpg") center / 100% 100% no-repeat;
+      background-color: #d8d8d4;
+    }
+    .outer-left  .outer-skin { left: 0; }
+    .outer-right .outer-skin { right: 0; }
+    /* Door thickness visible as the leaf swings */
+    .outer-left::after,
+    .outer-right::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 10px;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #c4b89a 0 10px,
+          #b3a888 10px 12px
+        );
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
+    }
+    .outer-left::after  { right: 0; border-right: 1px solid #6a6558; }
+    .outer-right::before { left: 0; border-left: 1px solid #6a6558; }
+    .outer-inner {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.18), transparent 8%, transparent 92%, rgba(0,0,0,0.18)),
+        repeating-linear-gradient(
+          180deg,
+          #e6e0d2 0 48px,
+          #d8d2c4 48px 50px
+        );
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+    }
+    .outer-skin { backface-visibility: hidden; }
+
+    .gate.stage-outers .outer-left,
+    .gate.stage-code .outer-left,
+    .gate.stage-inner .outer-left,
+    .gate.is-open .outer-left {
+      transform: translateX(-6%) rotateY(-82deg);
+    }
+    .gate.stage-outers .outer-right,
+    .gate.stage-code .outer-right,
+    .gate.stage-inner .outer-right,
+    .gate.is-open .outer-right {
+      transform: translateX(6%) rotateY(82deg);
+    }
+    .gate.stage-code .outer-doors {
+      /* parked open behind the lab doors — de-emphasize */
+      opacity: 0.35;
+      transition: opacity 0.5s ease, transform var(--outer-ms) var(--door-ease);
+      pointer-events: none;
+    }
+    .gate.is-open .outer-doors {
+      opacity: 0;
+      transition: opacity 0.4s ease 0.2s;
+    }
+
+    /* ── Login card (on the ordinary outer doors) ── */
+    .login-shell {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 4.5rem 1.25rem 2.5rem;
+      opacity: 1;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .gate.stage-outers .login-shell,
+    .gate.stage-code .login-shell,
+    .gate.stage-inner .login-shell,
+    .gate.is-open .login-shell {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* ── Access code (paused at closed inner double doors) ── */
+    .code-shell {
+      position: absolute;
+      inset: 0;
+      z-index: 28;
+      display: grid;
+      place-items: center;
+      padding: 4.5rem 1.25rem 2.5rem;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .gate.stage-code .code-shell {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .code-card {
+      width: min(100%, 380px);
+      padding: 1.45rem 1.4rem 1.3rem;
+      background:
+        linear-gradient(180deg, rgba(22, 32, 48, 0.94), rgba(10, 14, 22, 0.96));
+      border: 1px solid var(--cyan-dim);
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 1px rgba(61, 224, 255, 0.12),
+        0 0 40px rgba(61, 224, 255, 0.12),
+        0 22px 55px rgba(0, 0, 0, 0.55);
+      position: relative;
+      color: var(--text);
+    }
+    .code-card::before {
+      content: "";
+      position: absolute;
+      left: 14px; right: 14px; top: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0.85;
+    }
+    .code-card .kicker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+    .code-card .kicker-row .kicker { margin: 0; }
+    .code-card .seal-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan-glow);
+      animation: code-pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes code-pulse {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+    .code-card h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+    .code-card .lede {
+      margin: 0 0 1.1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .code-card .lede strong { color: var(--text); }
+    .code-card label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .code-card input {
+      width: 100%;
+      font: inherit;
+      font-family: var(--mono);
+      letter-spacing: 0.28em;
+      text-align: center;
+      font-size: 1.15rem;
+      color: var(--cyan);
+      background: #0c1017;
+      border: 1px solid var(--edge-bright);
+      border-radius: 7px;
+      padding: 0.75rem 0.8rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .code-card input:focus {
+      border-color: var(--cyan-dim);
+      box-shadow: 0 0 0 3px rgba(61, 224, 255, 0.15);
+    }
+    .code-card input::placeholder {
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      opacity: 0.7;
+    }
+    .code-card .btn-primary { margin-top: 0.15rem; }
+    .code-card .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      filter: none;
+    }
+    .code-meta {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .code-meta .live { color: var(--cyan); }
+    .code-err {
+      margin: 0 0 0.75rem;
+      min-height: 1.1em;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--amber);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .code-err.is-on { opacity: 1; }
+
+    .login-card {
+      width: min(100%, 400px);
+      padding: 1.5rem 1.45rem 1.35rem;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(240, 240, 236, 0.94));
+      border: 1px solid #c0c0bc;
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.6),
+        0 18px 50px rgba(0, 0, 0, 0.28);
+      position: relative;
+      color: #1a1a18;
+    }
+    .login-card::before {
+      content: "";
+      position: absolute;
+      left: 14px; right: 14px; top: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #8a8a86, transparent);
+      opacity: 0.7;
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+    .login-mark {
+      width: 40px; height: 40px;
+      border-radius: 9px;
+      border: 1px solid #a8a8a4;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #3a3a38;
+      background: #f0f0ec;
+      box-shadow: inset 0 0 0 1px #fff;
+    }
+    .login-brand strong {
+      display: block;
+      font-size: 1.1rem;
+      letter-spacing: 0.03em;
+      color: #1a1a18;
+    }
+    .login-brand small {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7a7a76;
+      margin-top: 0.15rem;
+    }
+
+    .login-card h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+      color: #1a1a18;
+    }
+    .login-card .lede {
+      margin: 0 0 1.15rem;
+      color: #4a4a46;
+      font-size: 0.92rem;
+    }
+    .login-card .lede strong { color: #1a1a18; }
+
+    .field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+    .login-card label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6a6a66;
+    }
+    .login-card input {
+      width: 100%;
+      font: inherit;
+      color: #1a1a18;
+      background: #fff;
+      border: 1px solid #c0c0bc;
+      border-radius: 7px;
+      padding: 0.7rem 0.8rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .login-card input:focus {
+      border-color: #5a5a58;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+    }
+    /* dashboard forms keep dark fields if any */
+    label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    input {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: #0c1017;
+      border: 1px solid var(--edge);
+      border-radius: 7px;
+      padding: 0.7rem 0.8rem;
+      outline: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border-radius: 7px;
+      padding: 0.7rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      transition: filter 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover { text-decoration: none; filter: brightness(1.06); }
+    .btn-primary {
+      color: var(--bg0);
+      background: linear-gradient(180deg, #6aeeff, var(--cyan));
+      box-shadow: 0 0 22px var(--cyan-glow);
+      width: 100%;
+    }
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      filter: none;
+    }
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(28, 35, 48, 0.9);
+      border-color: var(--edge-bright);
+    }
+    .btn-ghost {
+      color: #5a5a56;
+      background: transparent;
+      border-color: transparent;
+      width: 100%;
+      margin-top: 0.35rem;
+      font-weight: 500;
+      font-size: 0.88rem;
+    }
+    .btn-ghost:hover { color: #1a1a18; }
+
+    .login-meta {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a8a86;
+    }
+    .login-meta .live { color: #4a4a46; }
+
+    /* ══════════════════════════════════════
+       APP / DASHBOARD (behind the doors)
+       ══════════════════════════════════════ */
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding-top: 28px; /* mock banner */
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61, 224, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 90% 80%, rgba(255, 154, 60, 0.05), transparent 50%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+    .app::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+      background-image:
+        linear-gradient(rgba(61, 224, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(61, 224, 255, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--edge);
+      background: rgba(10, 12, 16, 0.88);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 28px;
+      z-index: 20;
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .brand:hover { text-decoration: none; }
+    .brand-mark {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--cyan-dim);
+      background: linear-gradient(135deg, rgba(61, 224, 255, 0.15), transparent 60%), var(--panel);
+      box-shadow: 0 0 16px var(--cyan-glow);
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .brand-text strong { font-size: 1.05rem; letter-spacing: 0.04em; }
+    .brand-text small {
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1rem;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid transparent;
+    }
+    .nav a:hover { color: var(--text); border-bottom-color: var(--cyan-dim); text-decoration: none; }
+    .nav .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+      font-size: 0.85rem;
+    }
+    .nav .user-chip .dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--cyan-dim), #0c3040);
+      border: 1px solid var(--cyan);
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--cyan);
+    }
+
+    .panel {
+      background:
+        linear-gradient(180deg, rgba(61, 224, 255, 0.04), transparent 28%),
+        var(--panel);
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      position: relative;
+    }
+    .panel-edge {
+      position: absolute;
+      left: 12px; right: 12px; top: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0.7;
+      border-radius: 2px;
+    }
+
+    .dash-hero {
+      margin: 1.5rem auto 1.25rem;
+      padding: 1.35rem 1.4rem;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.25rem;
+      align-items: center;
+      overflow: hidden;
+    }
+    @media (max-width: 800px) {
+      .dash-hero { grid-template-columns: 1fr; }
+    }
+    .dash-hero h1 {
+      margin: 0 0 0.4rem;
+      font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+      letter-spacing: -0.02em;
+    }
+    .dash-hero p { margin: 0; color: var(--muted); max-width: 42ch; }
+    .kicker {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.45rem;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+
+    .status-board {
+      display: grid;
+      gap: 0.55rem;
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem 0.7rem;
+      background: #0c1017;
+      border: 1px solid var(--edge);
+      border-radius: 7px;
+      font-size: 0.88rem;
+    }
+    .status-row .label { color: var(--dim); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .status-row .val { color: var(--text); font-weight: 600; }
+    .status-row .val.ok { color: var(--ok); }
+    .status-row .val.amber { color: var(--amber); }
+    .status-row .val.cyan { color: var(--cyan); }
+
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 800px) {
+      .meta-strip { grid-template-columns: 1fr 1fr; }
+    }
+    .meta-card { padding: 0.9rem 1rem; }
+    .meta-card .label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.35rem;
+    }
+    .meta-card .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta-card .value.cyan { color: var(--cyan); text-shadow: 0 0 18px var(--cyan-glow); }
+    .meta-card .value.amber { color: var(--amber); text-shadow: 0 0 14px var(--amber-glow); }
+    .meta-card .hint { color: var(--dim); font-size: 0.8rem; margin-top: 0.2rem; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+      flex-wrap: wrap;
+    }
+    .section-head h2 { margin: 0; font-size: 1.2rem; }
+    .section-head p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      border: 1px solid var(--edge);
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .town-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 900px) {
+      .town-grid { grid-template-columns: 1fr; }
+    }
+    .town {
+      padding: 1.1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .town-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .town h3 { margin: 0; font-size: 1.05rem; }
+    .town .place { color: var(--dim); font-size: 0.82rem; font-family: var(--mono); }
+    .status {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid var(--edge);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .status.hot {
+      color: var(--amber);
+      border-color: var(--amber-dim);
+      background: rgba(255, 154, 60, 0.08);
+    }
+    .status.active {
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      background: rgba(61, 224, 255, 0.08);
+    }
+    .progress {
+      height: 8px;
+      background: #0c1017;
+      border: 1px solid var(--edge);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+    .progress > i.amber {
+      background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+      box-shadow: 0 0 12px var(--amber-glow);
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .progress-meta strong { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 860px) {
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+    .card-pad { padding: 1.25rem 1.3rem; }
+    .card-pad h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
+    .card-pad p { margin: 0 0 0.7rem; color: var(--muted); font-size: 0.94rem; }
+    .card-pad p:last-child { margin-bottom: 0; }
+
+    .booking-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+    .booking-list li {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      background: #0c1017;
+      border: 1px solid var(--edge);
+      border-radius: 7px;
+      font-size: 0.9rem;
+    }
+    .booking-list .when {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--dim);
+      letter-spacing: 0.04em;
+    }
+    .booking-list .slot {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--cyan);
+      align-self: center;
+    }
+
+    .corridor-strip {
+      height: 160px;
+      border-radius: var(--radius);
+      border: 1px solid var(--edge);
+      background:
+        linear-gradient(90deg, rgba(7,9,13,0.55), transparent 30%, transparent 70%, rgba(7,9,13,0.55)),
+        url("visuals/mobilelab-pinterest-heavy-corridor.jpg") center / cover no-repeat;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .corridor-strip span {
+      position: absolute;
+      left: 1rem; bottom: 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(7, 9, 13, 0.75);
+      border: 1px solid var(--edge);
+      padding: 0.3rem 0.55rem;
+      border-radius: 4px;
+    }
+
+    footer {
+      border-top: 1px solid var(--edge);
+      padding: 1.4rem 0 2.2rem;
+      color: var(--dim);
+      font-size: 0.85rem;
+    }
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .sync {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+    }
+    .sync strong { color: var(--muted); font-weight: 500; }
+
+    /* Seal doors control (dashboard) */
+    .seal-btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .door, .gate-veil, .login-shell, .code-shell, .latch, .outer, .outer-doors, .outer-stage, .outer-header, .outer-bumper, .stage-caption {
+        transition-duration: 0.01ms !important;
+      }
+      .code-card .seal-dot { animation: none; }
+    }
+  </style>
+</head>
+<body class="info-era">
+  <div class="mock-banner">
+    P0 mock v14 · 2026-09-20
+    <span>photo-heavy info site · lab chrome is inside the dashboard · <a href="?era=ops">operating login peel</a></span>
+  </div>
+
+  <!-- ════════════ YEAR-1 INFO SITE ════════════ -->
+  <div id="info-site">
+    <header class="info-top">
+      <div class="wrap topbar-inner">
+        <a class="brand" href="#home" data-tab="home">
+          <div class="brand-mark">ML</div>
+          <div class="brand-text">
+            <strong>MobileLab</strong>
+            <small>A mobile fab shop for small towns</small>
+          </div>
+        </a>
+        <nav class="info-nav" aria-label="Public">
+          <button type="button" data-tab="home" class="is-on">Home</button>
+          <button type="button" data-tab="philosophy">Philosophy</button>
+          <button type="button" data-tab="route">Route</button>
+          <button type="button" data-tab="about">About</button>
+          <button type="button" data-tab="donate">Donate</button>
+          <button type="button" data-tab="faq">FAQ</button>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <section class="info-panel is-on" id="panel-home" data-panel="home">
+        <div class="letter">
+          <img class="portrait" data-b64="visuals/miko-letter-portrait.jpg.b64" src="" alt="Miko" />
+          <div>
+            <p>Hi, I'm Miko. I'm a digital facilitator. I help people who want to get access to the Secret Lab.</p>
+            <p>It's harder than school, because you have to develop your own learning, and you push yourself to complete your project. But you get to learn anything you want, and the only rule is be responsible. It's a chance to prove you can be responsible. You can create anything you want with the machines in the lab. First step is apply.</p>
+          </div>
+        </div>
+        <div class="photo-hero">
+          <img class="hero-bg" data-b64="visuals/mobilelab-exterior-primary.jpg.b64" src="" alt="Unmarked 53-ft reefer parked on a prairie main street at dusk, shop lights on inside" />
+          <div class="photo-hero-shade" aria-hidden="true"></div>
+          <div class="wrap photo-hero-copy">
+            <p class="status">Not rolling yet · dashboard closed · this is the raise</p>
+            <h1>You have 12 hours to make anything you want!</h1>
+            <p class="lede">
+              MobileLab is TMaxRD facility #12 — a freedom centre for creators, on wheels.
+              <strong>$1 an hour</strong> in cash at the door. Ages 7 to 77. Saskatchewan shakedown
+              <strong>2027</strong>, on demand, after the truck is funded and built.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-secondary" type="button" data-tab="philosophy">Philosophy</button>
+              <button class="btn btn-primary" type="button" data-tab="donate">Donate — help build it</button>
+            </div>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="hero-float">
+            <article class="hero-card">
+              <img data-b64="visuals/mobilelab-interior-entry.jpg.b64" src="" alt="Looking in the rear doors: printers, pit table, and machines" />
+              <div class="hero-card-body">
+                <h3>Capital raise — get the truck built</h3>
+                <p>About <strong>$300k CAD</strong> mid-range to first wheel-roll. Not a vague “support us.” Trailer, machines, power, living.</p>
+                <div class="thermo">
+                  <div class="bar" aria-hidden="true"><i></i></div>
+                  <div class="placeholder-note" style="margin:0">$0 of ~$300,000 CAD · not live in this mock</div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="feature-band">
+            <div class="feature-grid">
+              <article class="shot-card">
+                <img data-b64="visuals/mobilelab-dawn-rear-side-ramps.jpg.b64" src="" alt="Dawn, small-town street, rear walk-in ramp and two-leaf lab front" />
+                <div class="shot-body">
+                  <span class="shot-kicker">1 · Street</span>
+                  <h3>Trailer rear</h3>
+                  <p>What the street sees. Unmarked white reefer. No wrap, no logo. Ramp, then the inner lab front.</p>
+                </div>
+              </article>
+              <article class="shot-card">
+                <img data-b64="visuals/mobilelab-interior-entry.jpg.b64" src="" alt="Shop interior from the open rear" />
+                <div class="shot-body">
+                  <span class="shot-kicker">2 · Looking in</span>
+                  <h3>The Lab</h3>
+                  <p>Pit first. Then the raised deck: printers, laser, mill. Secret after the ordinary shell.</p>
+                </div>
+              </article>
+              <article class="shot-card">
+                <img data-b64="visuals/mobilelab-interior-corridor-style.jpg.b64" src="" alt="Working shop bay with machines, ducting, and the clean/dirty divider" />
+                <div class="shot-body">
+                  <span class="shot-kicker">3 · Shop</span>
+                  <h3>Dashboard closed</h3>
+                  <p>Preview of inside. Creator dashboard opens when the truck is funded and built. Not a login.</p>
+                </div>
+              </article>
+            </div>
+            <aside class="feature-rail" aria-label="Three doors">
+              <button type="button" data-tab="philosophy">
+                <strong>What this is</strong>
+                <span>Philosophy. About the Lab. Intended route.</span>
+              </button>
+              <button type="button" data-tab="donate">
+                <strong>Help build it</strong>
+                <span>Donate or in-kind. This is the raise.</span>
+              </button>
+              <button type="button" data-tab="about">
+                <strong>Use it later</strong>
+                <span>Prep now. You cannot book yet.</span>
+              </button>
+            </aside>
+          </div>
+
+          <div class="look-head">
+            <h2>Look around</h2>
+            <div class="look-nav">
+              <button type="button" class="look-prev" aria-label="Previous stills">‹</button>
+              <button type="button" class="look-next" aria-label="Next stills">›</button>
+            </div>
+          </div>
+          <div class="look-row" id="look-row">
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-exterior-primary.jpg.b64" src="" alt="Dusk on a prairie main street, shop lights in the trailer" />
+              <figcaption><strong>Parked in town</strong> Look still. Built truck stays unmarked.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-dawn-rear-side-ramps.jpg.b64" src="" alt="Early morning, ramps down, two-leaf lab front" />
+              <figcaption><strong>Dawn, ramps down</strong> Rear walk-in. Inner lab front closed.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-exterior-parked.jpg.b64" src="" alt="Trailer on a false-front street, garage bay open" />
+              <figcaption><strong>False-front street</strong> Ordinary shell. Lab is inside.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-dawn-ramps-7.jpg.b64" src="" alt="Garage ramp and rear walk-in at sunrise" />
+              <figcaption><strong>Both ramps</strong> Garage for the e-moto. People walk the rear.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-interior-entry.jpg.b64" src="" alt="Looking into the shop from the rear doors" />
+              <figcaption><strong>From the door</strong> Pit table, printers, mill. First hour is a look-around.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-interior-corridor-from-original.jpg.b64" src="" alt="Shop aisle with hex ceiling lights and machines" />
+              <figcaption><strong>Aisle</strong> Working bay. Dashboard is a picture until the Lab exists.</figcaption>
+            </figure>
+            <figure class="look-card">
+              <img data-b64="visuals/mobilelab-future-4ft-aisle-a.jpg.b64" src="" alt="Inside look: workstations along a four-foot aisle" />
+              <figcaption><strong>Inside look</strong> Workstations. Sci-fi finish lives in the Lab, not on this page.</figcaption>
+            </figure>
+          </div>
+          <p class="placeholder-note">
+            These are look stills, not photographs of the built truck. They will be replaced from ~15,000 real photos
+            of the 11 prior TMaxRD facilities — not generated art. Rear of <em>this</em> trailer: a real photo when it exists.
+          </p>
+          <p class="info-foot">Easy to understand. Easy to give. Then leave. No newsletter.</p>
+        </div>
+      </section>
+
+      <section class="info-panel prose" id="panel-philosophy" data-panel="philosophy">
+        <p class="status">Read this before you apply</p>
+        <figure class="banner-still">
+          <img data-b64="visuals/mobilelab-dawn-rear-side-ramps.jpg.b64" src="" alt="Unmarked reefer at dawn on a small-town street, ramps down" />
+        </figure>
+        <h1>Philosophy</h1>
+        <p class="lede">This is how the Lab works. Read it once. Then you know what you are walking into.</p>
+        <h2>Start here</h2>
+        <p>If this is your first time, do it in this order.</p>
+        <ol>
+          <li><strong>Decide what you want to make, and why.</strong> One sentence each is enough to begin our project file. You can change it later and you will be adding.</li>
+          <li><strong>Apply.</strong> You send that plan. If it is not ready, it comes back with a reason. You change it and send it again. An excellent plan might pass the first time, but its very rare. The form is not open yet. Until the truck is built, this page is the prep.</li>
+          <li><strong>When the truck is in town, look around for the first hour.</strong> Ask Miko if you have a question. She is the digital facilitator. She helps you get clear on what you are making and the next step. You do the making.</li>
+          <li><strong>Pay at the door.</strong> $1 an hour, cash, for the hours you booked.</li>
+          <li><strong>Then you work.</strong> You make it, and you take it home. If you break something, you help fix it or assist fixing it.</li>
+        </ol>
+        <h2>What MobileLab is</h2>
+        <p>A 53-ft shop on a truck. It visits small towns across the rural great plains. This is facility #12 in a 14-year research program. The first 11 were buildings. This one travels. Ages 7 to 77. Age is not really a barrier, responsibility is. A responsible 7 years old has more priority tham a an irresponsible 50 year old.</p>
+        <p><strong>Everyone here is a creator.</strong> You are not a student, and you are not a customer buying a finished thing. One rule: be responsible. Under that sit about 100 best practices. They are not rules. Each one makes the learning better. Missing one is not a punishment.</p>
+        <h2>What it is not</h2>
+        <ul>
+          <li><strong>Not a school.</strong> No teacher, no course you must finish, no grade from us. It is harder than school, because you have to make yourself do it. The only lesson you must pass is a short safety tutorial for a machine you choose to run. You can do that tutorial before the truck arrives.</li>
+          <li><strong>Not a service.</strong> The $1 does not hire someone to make your project. It is the price of walking in. You hand over cash because you want the time.</li>
+          <li><strong>Not a contest.</strong> Nobody ranks what you made. There is no top creator. The only person you are up against is you.</li>
+          <li><strong>Not a business.</strong> Not a money making venture, all incoming funds go to development and operational costs.</li>
+          <li><strong>Not a charity.</strong> We do not follow charity rules of regulations. We choose what is best for the kids individual learning, not adults trying to regulate or control.</li>
+        </ul>
+        <h2>Nobody is forced</h2>
+        <p>You come because you decided to. No one here can make you finish, stay, or take their idea. Almost all of what you get done is you making yourself do it.</p>
+        <p>A facilitator, including Miko, points you at the next step and then leaves you to it. An accelerator is the person who can sign you off on a machine. They give advice only when you ask. You can say no. Stopping halfway is allowed. Making a different small thing on each machine is allowed. You do not owe one finished object.</p>
+        <h2>Small towns first</h2>
+        <p>The truck stops in towns under 1,000 people. A city usually already have these machines. If no small town has asked, and people in a city want the shop, the truck can go there. Small towns first. Not small towns only.</p>
+        <h2>You against you</h2>
+        <p>The truck brings the tools to people who cannot get them otherwise, and keeps the price low so money is not what stops you. What is left is your own mind. You are practicing how to learn. There is no scoreboard. You just have to do a little better than the day before. You acknowledge your improvement.</p>
+        <h2>What you pay</h2>
+        <p>Everyone pays $1 an hour in coins or bills at the door, each day they walk in. Most people bring $4 for four hours in the shop. You are encouraged to bring you own materials. You can also use material from the truck's shelves, you pay for that separately, at cost, through Miko or this website. A parent can pay that part while you are on the floor. Material you bring yourself is not billed. The dollar is there so this place matches the real world: things cost something, there are no free lunches.</p>
+        <h2>How you get time</h2>
+        <p>You do not just pick a clock time. You apply with what you will make and why. If the plan is not ready, it comes back with a reason, and you send it again. School often gives you one try. You keep trying to until you get to some success.</p>
+        <h2>Lab project capacity</h2>
+        <p>Every project must be smaller than a cubic foot. 12" x 12" x 12"</p>
+        <p>Or metric 10cm x 10cm x 10 cm a cubic liter</p>
+      </section>
+
+      <section class="info-panel" id="panel-route" data-panel="route">
+        <p class="status">Intended travel area · not a tracker</p>
+        <figure class="banner-still">
+          <img data-b64="visuals/mobilelab-exterior-parked.jpg.b64" src="" alt="Trailer parked on a prairie false-front street" />
+        </figure>
+        <h1>Route</h1>
+        <p class="lede">The truck is not moving yet. This map is where it <strong>will</strong> travel — Phase 1 is a Saskatchewan shakedown (2027), Phase 2 is Saskatchewan and Alberta, Phase 3 is Calgary AB ↔ Kalgary TX. Coarse area. No live pin. Exact address is never on a map.</p>
+        <svg class="map-svg" viewBox="0 0 640 360" role="img" aria-label="Static corridor map of the intended MobileLab route">
+          <rect width="640" height="360" fill="#fffdf8"/>
+          <text x="24" y="28" fill="#7a7368" font-size="13" font-family="Georgia, serif">Where it will travel — not where it is</text>
+          <ellipse cx="300" cy="70" rx="210" ry="48" fill="none" stroke="#2c5a3f" stroke-width="2"/>
+          <text x="160" y="76" fill="#2c5a3f" font-size="14" font-family="Georgia, serif">Phase 1 SK · Phase 2 SK + AB</text>
+          <ellipse cx="320" cy="200" rx="240" ry="110" fill="none" stroke="#9a4a2a" stroke-width="1.5" stroke-dasharray="6 5"/>
+          <text x="168" y="200" fill="#9a4a2a" font-size="14" font-family="Georgia, serif">Phase 3 · Calgary ↔ Kalgary TX</text>
+          <circle cx="180" cy="70" r="5" fill="#2c5a3f"/>
+          <text x="190" y="55" fill="#5a5348" font-size="12">SK</text>
+          <circle cx="420" cy="70" r="5" fill="#2c5a3f"/>
+          <text x="430" y="55" fill="#5a5348" font-size="12">AB</text>
+          <circle cx="250" cy="280" r="4" fill="#9a4a2a"/>
+          <text x="262" y="284" fill="#5a5348" font-size="12">great plains band</text>
+          <text x="24" y="340" fill="#7a7368" font-size="12">N approved proposals roll a town (floor 3, cap 6) — after the dashboard opens.</text>
+        </svg>
+      </section>
+
+      <section class="info-panel prose" id="panel-about" data-panel="about">
+        <p class="status">About the Lab · not a show to watch</p>
+        <h1>About</h1>
+        <div class="visit-shots">
+          <figure>
+            <img data-b64="visuals/mobilelab-dawn-ramps-7.jpg.b64" src="" alt="Rear walk-in ramp and garage ramp at sunrise" />
+            <figcaption>Outer doors, a steep ramp, then the lab door. Enter your secret code.</figcaption>
+          </figure>
+          <figure>
+            <img data-b64="visuals/mobilelab-interior-entry.jpg.b64" src="" alt="Inside the shop from the rear doors" />
+            <figcaption>Day 1 starts with a look-around. Then everyone else is out.</figcaption>
+          </figure>
+        </div>
+        <p>An unmarked white reefer. Outer doors, a steep ramp, then the lab door. Enter your secret code.</p>
+        <p>You pay at the door, in coins or bills: $1 for each hour booked that day. A 4-hour shop shift is $4. A pit hour is $1. You pay again every day you walk in. Facility stock is extra, paid by you or the booker through Miko or the website. Bring your own materials if you want. Those are not billed.</p>
+        <p>Day 1 starts with a look-around. Creators and parents of anyone under 18 walk the truck. Max or Miko answers questions. By the end of that hour, creators are booked in with Miko (kiosk video, kid alone) and everyone else is out. After that, the kid is on the floor alone.</p>
+        <p>Pit first: four seats on one shared bench, level 0, no powered machine. Shop is 4 to 12 hours on the raised deck.</p>
+        <p>One rule: be responsible. About 100 best practices sit under it. None of them are rules. Each one makes the room better for learning. Practice them and you are optimizing the work.</p>
+        <p>You make it, you take it. You break it, you help fix it. Leave scrap for the pit if you want. A plan that is not ready comes back with a reason. A tool-tour is a valid plan.</p>
+        <h2>Short version</h2>
+        <p>Outer doors, steep ramp, lab door. Enter your secret code. Pay at the door, every day: $1 an hour, coins or bills. Most shifts are $4. Pit is $1. Stock is extra, through Miko or the site. Day 1 is a one-hour look-around with Max or Miko; by the end of it the creator is booked in and everyone else leaves. Then the kid works alone. Pit is four seats on one bench, no powered tools. Shop is 4 to 12 hours on the deck. One rule: be responsible. The rest are practices, not rules. You make it, you take it. You break it, you help fix it.</p>
+      </section>
+
+      <section class="info-panel" id="panel-donate" data-panel="donate">
+        <p class="status">First-class · get the truck built</p>
+        <h1>Donate</h1>
+        <figure class="banner-still">
+          <img data-b64="visuals/mobilelab-exterior-primary.jpg.b64" src="" alt="The trailer on a prairie main street at dusk" />
+        </figure>
+        <p class="lede">Money for the build-out: trailer, machines, power, living. Not a vague “support us.” About <strong>$300k CAD mid-range</strong> to first wheel-roll. Stripe and CanadaHelps when live. US donors via fiscal sponsor. This mock does not take money.</p>
+        <div class="thermo">
+          <strong>Capital raise — get the truck built</strong>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="placeholder-note" style="margin:0">$0 of ~$300,000 CAD · campaign not live in this mock · no fake impact numbers</div>
+        </div>
+        <p>In-kind (machines, tools, materials): email the operator. Not a public classifieds board. Logo-for-cash is sponsorship, not a receiptable gift.</p>
+        <p><a class="btn btn-primary" href="mailto:maxnoble440@gmail.com?subject=MobileLab%20donate">Email to give or sponsor</a></p>
+      </section>
+
+      <section class="info-panel prose" id="panel-faq" data-panel="faq">
+        <h1>FAQ</h1>
+        <h2>Can I book?</h2>
+        <p>Not yet. Creator dashboard opens when the truck is funded and built.</p>
+        <h2>Where is the truck right now?</h2>
+        <p>It isn’t moving. The map is the intended area, not a tracker. There will never be a public live GPS pin.</p>
+        <h2>Is it a school?</h2>
+        <p>No. See Philosophy.</p>
+        <h2>What does it cost?</h2>
+        <p>Everyone pays $1 an hour, cash at the door, each day you walk in — coins or bills. Most people bring $4 for a 4-hour shop shift. Pit-hour is $1. If you want facility stock, you or the booker pay through Miko or the website. Bring your own if you want — that part is not billed.</p>
+        <h2>Is it safe?</h2>
+        <p>Real tools, managed risk. This is a medium danger facility. Homes, schools, public centres etc. are all low danger. However the real world is high danger. This is like boot camp for real world danger and responsibility practice.</p>
+        <h2>What does a host town provide?</h2>
+        <p>A place to park, shore power, water/sewer hookups. Email for the host-site forms package when you are ready to host.</p>
+        <h2>How do I help?</h2>
+        <p>Donate. Or register interest to create or to host. One email. No newsletter.</p>
+      </section>
+    </div>
+  </div>
+
+  <!-- ════════════ GATE (layered) ════════════ -->
+  <div class="gate is-closed" id="gate" aria-hidden="false">
+    <div class="gate-veil"></div>
+
+    <!-- Layer 2: inner sci-fi lab front (only after peel) -->
+    <div class="inner-doors" aria-hidden="true">
+      <div class="door door-left"><div class="door-face"></div></div>
+      <div class="door door-right"><div class="door-face"></div></div>
+      <div class="latch"></div>
+    </div>
+
+    <!-- Layer 1: ordinary traditional rear doors (street face) -->
+    <div class="outer-doors" aria-hidden="true">
+      <div class="outer-stage">
+        <div class="outer-header"></div>
+        <div class="outer-leaves">
+          <div class="outer outer-left">
+            <div class="outer-skin"></div>
+            <div class="outer-inner"></div>
+          </div>
+          <div class="outer outer-right">
+            <div class="outer-skin"></div>
+            <div class="outer-inner"></div>
+          </div>
+        </div>
+        <div class="outer-bumper"></div>
+      </div>
+    </div>
+
+    <div class="stage-caption" id="stage-caption">Ordinary trailer · sealed</div>
+
+    <div class="login-shell">
+      <div class="login-card">
+        <div class="login-brand">
+          <div class="login-mark">ML</div>
+          <div>
+            <strong>MobileLab</strong>
+            <small>Unmarked reefer · Facility 12</small>
+          </div>
+        </div>
+        <h1>Just another white trailer</h1>
+        <p class="lede">
+          Until you open it. <strong>Traditional rear doors</strong> first,
+          then a <strong>code at the closed lab front</strong>, then the slide opens —
+          secret shop inside an ordinary semi. Mock only — any credentials work.
+        </p>
+        <form id="login-form" action="#" method="post" autocomplete="on">
+          <div class="field">
+            <label for="email">Account</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="username" required value="alex@example.com" />
+          </div>
+          <div class="field">
+            <label for="password">Passcode</label>
+            <input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required value="mock" />
+          </div>
+          <button class="btn btn-primary" type="submit" id="login-btn">
+            Open the trailer
+          </button>
+          <button class="btn btn-ghost" type="button" id="guest-btn">
+            Public info site
+          </button>
+        </form>
+        <div class="login-meta">
+          <span>1 · Outer doors</span>
+          <span class="live">Secret lab sealed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Access code — shown only when paused at closed inner double doors -->
+    <div class="code-shell" id="code-shell" aria-hidden="true">
+      <div class="code-card">
+        <div class="kicker-row">
+          <div class="kicker">Lab front · sealed</div>
+          <span class="seal-dot" aria-hidden="true"></span>
+        </div>
+        <h1>Enter access code</h1>
+        <p class="lede">
+          Outer reefer doors are open. The <strong>two-leaf sliding lab front</strong>
+          stays locked until the code is accepted.
+        </p>
+        <form id="code-form" action="#" method="post" autocomplete="off">
+          <div class="field">
+            <label for="access-code">Access code</label>
+            <input
+              id="access-code"
+              name="access-code"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9A-Za-z\-]*"
+              maxlength="12"
+              placeholder="••••"
+              autocomplete="one-time-code"
+              required
+              value="12"
+            />
+          </div>
+          <p class="code-err" id="code-err" role="status" aria-live="polite"></p>
+          <button class="btn btn-primary" type="submit" id="code-btn">
+            Unlock lab front
+          </button>
+        </form>
+        <div class="code-meta">
+          <span>2 · Code gate</span>
+          <span class="live">Mock · any code works</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ DASHBOARD ════════════ -->
+  <div class="app" id="app" aria-hidden="true">
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <a class="brand" href="#dash-top">
+          <div class="brand-mark">ML</div>
+          <div class="brand-text">
+            <strong>MobileLab</strong>
+            <small>Booker dashboard</small>
+          </div>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#towns">Towns</a>
+          <a href="#bookings">Bookings</a>
+          <a href="#projects">Projects</a>
+          <span class="user-chip" title="Signed in (mock)">
+            <span class="dot">A</span>
+            <span id="user-label">Alex</span>
+          </span>
+          <button class="btn btn-secondary seal-btn" type="button" id="logout-btn">
+            Seal doors
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="dash-top">
+      <div class="wrap">
+        <section class="panel dash-hero">
+          <div class="panel-edge"></div>
+          <div>
+            <div class="kicker">Lab open · session active</div>
+            <h1>Welcome back, <span id="welcome-name">Alex</span>.</h1>
+            <p>
+              Same peel as the real trailer: ordinary rear doors, code at the closed
+              lab front, then the slide — secret shop inside an unmarked semi.
+              Your projects and bookings are inside; public map stays outside.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#projects" style="width:auto">New project proposal</a>
+              <a class="btn btn-secondary" href="#towns">Town progress</a>
+            </div>
+          </div>
+          <div class="status-board" aria-label="Session status">
+            <div class="status-row">
+              <span class="label">Access</span>
+              <span class="val ok">Clear</span>
+            </div>
+            <div class="status-row">
+              <span class="label">Next stop</span>
+              <span class="val cyan">Brooks · live</span>
+            </div>
+            <div class="status-row">
+              <span class="label">Roll threshold N</span>
+              <span class="val amber">3</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="meta-strip" aria-label="At a glance">
+          <div class="panel meta-card">
+            <div class="label">Hour stake</div>
+            <div class="value cyan">$1 / hr</div>
+            <div class="hint">cash at the door</div>
+          </div>
+          <div class="panel meta-card">
+            <div class="label">Open proposals</div>
+            <div class="value">2</div>
+            <div class="hint">awaiting timeslot</div>
+          </div>
+          <div class="panel meta-card">
+            <div class="label">Booked hours</div>
+            <div class="value amber">4</div>
+            <div class="hint">this stop window</div>
+          </div>
+          <div class="panel meta-card">
+            <div class="label">Pit-hour</div>
+            <div class="value">$1</div>
+            <div class="hint">1 h · L0 bench</div>
+          </div>
+        </div>
+
+        <div class="corridor-strip" role="img" aria-label="Lab corridor interior">
+          <span>Lab interior · deco match</span>
+        </div>
+
+        <section id="towns">
+          <div class="section-head">
+            <div>
+              <h2>Towns on the board</h2>
+              <p>Progress is for getting the truck there — not ranking creators.</p>
+            </div>
+            <span class="tag">Recruitment layer</span>
+          </div>
+          <div class="town-grid">
+            <article class="panel town">
+              <div class="panel-edge"></div>
+              <div class="town-top">
+                <div>
+                  <h3>Spur</h3>
+                  <div class="place">TX · rural target</div>
+                </div>
+                <span class="status hot">1 to go</span>
+              </div>
+              <div class="progress" aria-hidden="true"><i class="amber" style="width:67%"></i></div>
+              <div class="progress-meta">
+                <span><strong>2</strong> of <strong>3</strong> approved</span>
+                <span>share →</span>
+              </div>
+            </article>
+            <article class="panel town">
+              <div class="panel-edge"></div>
+              <div class="town-top">
+                <div>
+                  <h3>Melfort</h3>
+                  <div class="place">SK · candidate</div>
+                </div>
+                <span class="status">Building</span>
+              </div>
+              <div class="progress" aria-hidden="true"><i style="width:33%"></i></div>
+              <div class="progress-meta">
+                <span><strong>1</strong> of <strong>3</strong> approved</span>
+                <span>interest</span>
+              </div>
+            </article>
+            <article class="panel town">
+              <div class="panel-edge"></div>
+              <div class="town-top">
+                <div>
+                  <h3>Brooks</h3>
+                  <div class="place">AB · stopped now</div>
+                </div>
+                <span class="status active">Live · ~10 km</span>
+              </div>
+              <div class="progress" aria-hidden="true"><i style="width:100%"></i></div>
+              <div class="progress-meta">
+                <span>Stop in progress</span>
+                <span>fine map only</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="dash-grid" id="bookings">
+          <div class="panel card-pad" id="projects">
+            <div class="panel-edge"></div>
+            <h2>Your projects</h2>
+            <p>Proposals live here after login. Online form + later Miko chat beside it.</p>
+            <ul class="booking-list">
+              <li>
+                <div>
+                  <strong>Solar water bracket</strong>
+                  <div class="when">Laser · material: 3 mm aluminum</div>
+                </div>
+                <span class="slot">Draft</span>
+              </li>
+              <li>
+                <div>
+                  <strong>Garden tool hanger</strong>
+                  <div class="when">3D print · PETG</div>
+                </div>
+                <span class="slot">Approved</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel card-pad">
+            <div class="panel-edge"></div>
+            <h2>Upcoming bookings</h2>
+            <p>First-come machine slots. No merit ranking.</p>
+            <ul class="booking-list">
+              <li>
+                <div>
+                  <strong>Brooks · Station 2</strong>
+                  <div class="when">Sat · 09:00–13:00</div>
+                </div>
+                <span class="slot">Laser</span>
+              </li>
+              <li>
+                <div>
+                  <strong>Brooks · Station 5</strong>
+                  <div class="when">Sat · 13:00–17:00</div>
+                </div>
+                <span class="slot">CNC</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap footer-inner">
+        <div>
+          MobileLab · booker dashboard (mock)<br />
+          Entry: outer reefer → code at lab doors → 2-leaf slide
+        </div>
+        <div class="sync">
+          LAST SYNCED <strong>mock · 4h ago</strong><br />
+          truck master · site slave
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const gate = document.getElementById("gate");
+      const app = document.getElementById("app");
+      const body = document.body;
+      const caption = document.getElementById("stage-caption");
+      const loginForm = document.getElementById("login-form");
+      const loginBtn = document.getElementById("login-btn");
+      const guestBtn = document.getElementById("guest-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+      const emailInput = document.getElementById("email");
+      const welcomeName = document.getElementById("welcome-name");
+      const userLabel = document.getElementById("user-label");
+      const codeShell = document.getElementById("code-shell");
+      const codeForm = document.getElementById("code-form");
+      const codeBtn = document.getElementById("code-btn");
+      const codeInput = document.getElementById("access-code");
+      const codeErr = document.getElementById("code-err");
+
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const T = reduce
+        ? { outer: 40, inner: 40, done: 20 }
+        : { outer: 950, inner: 1250, done: 350 };
+
+      let busy = false;
+      let timers = [];
+      let pendingName = "Creator";
+
+      function clearTimers() {
+        timers.forEach(clearTimeout);
+        timers = [];
+      }
+
+      function later(ms, fn) {
+        timers.push(setTimeout(fn, ms));
+      }
+
+      function nameFromEmail(email) {
+        if (!email) return "Creator";
+        const local = email.split("@")[0] || "Creator";
+        return local.charAt(0).toUpperCase() + local.slice(1).replace(/[._-]/g, " ");
+      }
+
+      function setCaption(text) {
+        if (caption) caption.textContent = text;
+      }
+
+      function stripStages() {
+        gate.classList.remove(
+          "is-closed", "is-open",
+          "stage-outers", "stage-code", "stage-inner"
+        );
+      }
+
+      function setCodeVisible(on) {
+        if (!codeShell) return;
+        codeShell.setAttribute("aria-hidden", on ? "false" : "true");
+      }
+
+      function clearCodeErr() {
+        if (!codeErr) return;
+        codeErr.textContent = "";
+        codeErr.classList.remove("is-on");
+      }
+
+      function showCodeErr(msg) {
+        if (!codeErr) return;
+        codeErr.textContent = msg;
+        codeErr.classList.add("is-on");
+      }
+
+      /** Phase 1: open ordinary outer doors, then pause at closed lab doors. */
+      function openOuters(opts) {
+        if (busy) return;
+        busy = true;
+        clearTimers();
+        clearCodeErr();
+
+        pendingName = (opts && opts.name) || "Creator";
+        welcomeName.textContent = pendingName;
+        userLabel.textContent = pendingName.split(" ")[0];
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Opening…";
+        codeBtn.disabled = false;
+        codeBtn.textContent = "Unlock lab front";
+        // Keep dashboard aria-hidden until lab front actually opens
+        app.setAttribute("aria-hidden", "true");
+
+        stripStages();
+        gate.classList.add("stage-outers");
+        setCodeVisible(false);
+        setCaption("1 · Traditional rear doors open");
+
+        later(T.outer, function () {
+          stripStages();
+          gate.classList.add("stage-code");
+          setCodeVisible(true);
+          setCaption("2 · Lab front locked · enter code");
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Open the trailer";
+          busy = false;
+          if (codeInput) {
+            codeInput.focus();
+            codeInput.select();
+          }
+        });
+      }
+
+      /** Phase 2 (after code): open sliding lab front → dashboard. */
+      function unlockLabFront() {
+        if (busy) return;
+        const raw = (codeInput && codeInput.value || "").trim();
+        if (!raw) {
+          showCodeErr("Enter an access code.");
+          if (codeInput) codeInput.focus();
+          return;
+        }
+        // Mock only — any non-empty code works
+        clearCodeErr();
+        busy = true;
+        clearTimers();
+
+        codeBtn.disabled = true;
+        codeBtn.textContent = "Unlocking…";
+        setCodeVisible(false);
+        app.setAttribute("aria-hidden", "false");
+
+        // From stage-code (outers open, inners closed) → stage-inner (slide open).
+        // Don't stripStages first — that would snap outers closed for a frame.
+        gate.classList.remove("is-closed", "is-open", "stage-outers", "stage-code");
+        gate.classList.add("stage-inner");
+        setCaption("3 · Sliding lab front opens");
+
+        later(T.inner + T.done, function () {
+          stripStages();
+          gate.classList.add("is-open");
+          gate.setAttribute("aria-hidden", "true");
+          body.classList.remove("gate-locked");
+          setCaption("Lab open");
+          codeBtn.disabled = false;
+          codeBtn.textContent = "Unlock lab front";
+          busy = false;
+          const heading = app.querySelector("h1");
+          if (heading) {
+            heading.setAttribute("tabindex", "-1");
+            heading.focus({ preventScroll: false });
+          }
+        });
+      }
+
+      function sealDoors() {
+        if (busy) return;
+        busy = true;
+        clearTimers();
+        clearCodeErr();
+        window.scrollTo({ top: 0, behavior: reduce ? "auto" : "instant" in window ? "instant" : "auto" });
+        body.classList.add("gate-locked");
+        app.setAttribute("aria-hidden", "true");
+        setCodeVisible(false);
+
+        // Reverse: close slide → (brief closed lab front) → close outers
+        stripStages();
+        gate.classList.add("stage-inner");
+        setCaption("Sealing lab front…");
+
+        later(T.inner * 0.55, function () {
+          stripStages();
+          gate.classList.add("stage-code");
+          setCaption("Lab front sealed…");
+        });
+
+        later(T.inner * 0.55 + T.outer * 0.35, function () {
+          stripStages();
+          gate.classList.add("stage-outers");
+          setCaption("Closing outer doors…");
+        });
+
+        later(T.inner * 0.55 + T.outer * 0.35 + T.outer * 0.55, function () {
+          stripStages();
+          gate.classList.add("is-closed");
+          gate.setAttribute("aria-hidden", "false");
+          setCodeVisible(false);
+          setCaption("Ordinary trailer · sealed");
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Open the trailer";
+          codeBtn.disabled = false;
+          codeBtn.textContent = "Unlock lab front";
+          busy = false;
+          emailInput.focus();
+        });
+      }
+
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        openOuters({ name: nameFromEmail(emailInput.value) });
+      });
+
+      guestBtn.addEventListener("click", function () {
+        location.href = location.pathname;
+      });
+
+      codeForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        unlockLabFront();
+      });
+
+      if (codeInput) {
+        codeInput.addEventListener("input", clearCodeErr);
+      }
+
+      logoutBtn.addEventListener("click", function () {
+        sealDoors();
+      });
+
+      function showInfoTab(id) {
+        const site = document.getElementById("info-site");
+        if (!site) return;
+        site.querySelectorAll(".info-nav button").forEach(function (b) {
+          b.classList.toggle("is-on", b.getAttribute("data-tab") === id);
+        });
+        site.querySelectorAll(".info-panel").forEach(function (p) {
+          p.classList.toggle("is-on", p.getAttribute("data-panel") === id);
+        });
+      }
+      document.querySelectorAll("#info-site [data-tab]").forEach(function (el) {
+        el.addEventListener("click", function (e) {
+          const id = el.getAttribute("data-tab");
+          if (!id) return;
+          if (el.tagName === "A") e.preventDefault();
+          showInfoTab(id);
+          if (history.replaceState) history.replaceState(null, "", "#" + id);
+        });
+      });
+      const hashTab = (location.hash || "").replace("#", "");
+      if (hashTab && document.querySelector('[data-panel="' + hashTab + '"]')) {
+        showInfoTab(hashTab);
+      }
+
+      const lookRow = document.getElementById("look-row");
+      const lookPrev = document.querySelector(".look-prev");
+      const lookNext = document.querySelector(".look-next");
+      if (lookRow && lookPrev && lookNext) {
+        lookPrev.addEventListener("click", function () {
+          lookRow.scrollBy({ left: -300, behavior: "smooth" });
+        });
+        lookNext.addEventListener("click", function () {
+          lookRow.scrollBy({ left: 300, behavior: "smooth" });
+        });
+      }
+
+      // Deep-link: ?era=ops | ?open=1 | ?code=1 → operating-era peel (design review)
+      const params = new URLSearchParams(location.search);
+      const ops = params.get("era") === "ops" || params.get("open") === "1" || params.get("code") === "1";
+      if (ops) {
+        document.documentElement.setAttribute("data-era", "ops");
+        body.classList.remove("info-era");
+        body.classList.add("ops-era", "gate-locked");
+      }
+      if (params.get("open") === "1") {
+        welcomeName.textContent = "Alex";
+        userLabel.textContent = "Alex";
+        stripStages();
+        gate.classList.add("is-open");
+        gate.setAttribute("aria-hidden", "true");
+        app.setAttribute("aria-hidden", "false");
+        body.classList.remove("gate-locked");
+        setCodeVisible(false);
+      } else if (params.get("code") === "1") {
+        pendingName = "Alex";
+        welcomeName.textContent = "Alex";
+        userLabel.textContent = "Alex";
+        stripStages();
+        gate.classList.add("stage-code");
+        gate.setAttribute("aria-hidden", "false");
+        setCodeVisible(true);
+        setCaption("2 · Lab front locked · enter code");
+        body.classList.add("gate-locked");
+        app.setAttribute("aria-hidden", "true");
+        if (codeInput) {
+          codeInput.focus();
+          codeInput.select();
+        }
+      }
+    })();
+  </script>
+
+<script>
+(function () {
+  var cache = {};
+  document.querySelectorAll("img[data-b64]").forEach(function (img) {
+    var path = img.getAttribute("data-b64");
+    if (!cache[path]) {
+      cache[path] = fetch(path).then(function (r) {
+        if (!r.ok) throw new Error(path);
+        return r.text();
+      }).then(function (t) {
+        return "data:image/jpeg;base64," + t.replace(/\s+/g, "");
+      });
+    }
+    cache[path].then(function (uri) { img.src = uri; }).catch(function () {});
+  });
+})();
+</script>
+
+</body>
+</html>
